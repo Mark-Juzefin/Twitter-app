@@ -1,0 +1,90 @@
+version: "3.2"
+services:
+   
+    node_1:
+        container_name: node_1
+        image: cockroachdb/cockroach:latest
+        volumes:
+           - ./data/node_1:/cockroach/cockroach-data
+        command: start --insecure --join=node_2
+        ports:
+           - "26257:26257"
+           - "8080:8080"
+        networks:
+            cockroachdb_net:
+                aliases:
+                   - node_1
+            
+    node_2:
+        container_name: node_2
+        image: cockroachdb/cockroach:latest
+        volumes:
+           - ./data/node_2:/cockroach/cockroach-data
+        command: start --insecure --join=node_1
+        networks:
+            cockroachdb_net:
+                aliases:
+                   - node_2
+
+    rabbitmq:
+      image: rabbitmq:3.8.25-management-alpine
+      container_name: 'rabbitmq'
+      ports:
+          - 5672:5672
+          - 15673:15672
+      volumes:
+          - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+          - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+      networks:
+            cockroachdb_net:
+                aliases:
+                   - rabbitmq
+            
+      
+            
+    twitter-api:
+        build: ./twitter-api
+        image: markjuzefin/twitter-api
+        ports:
+            - "9090:9090"
+        networks:
+            cockroachdb_net:
+                aliases:
+                   - twitter-api
+    
+    twitter-db:
+        build: ./twitter-db
+        image: markjuzefin/twitter-db
+        ports:
+            - "8090:8090"
+        networks:
+            cockroachdb_net:
+                aliases:
+                   - twitter-db
+    
+    twitter-bot:
+        build: ./twitter-bot
+        image: markjuzefin/twitter-bot
+        networks:
+            cockroachdb_net:
+                aliases:
+                   - twitter-bot
+      
+
+    twitter-client:
+        build: ./twitter-client
+        image: markjuzefin/twitter-client
+        ports:
+            - "1337:1337"
+        networks:
+            cockroachdb_net:
+                aliases:
+                   - twitter-client
+      
+networks:
+    app-network:
+        driver: bridge
+    cockroachdb_net:
+        driver: bridge
+    rabbitmq_nodejs:
+        driver: bridge
