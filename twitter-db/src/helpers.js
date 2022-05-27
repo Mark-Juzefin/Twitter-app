@@ -8,7 +8,7 @@ const getDB = async () => {
 
     const db = await new Pool({
         connectionString: 'postgresql://root@node_1:26257/postgres?sslmode=disable',
-        connectionTimeoutMillis: 10000
+        connectionTimeoutMillis: 60000
     })
     const createDataBaseSQL = `CREATE DATABASE IF NOT EXISTS postgres`
 
@@ -52,7 +52,7 @@ values
       })
       await db.query('select * from users',async (err, res) => {
         if(err){console.log('pool.query', err) }
-        if (res.rows.length <= 6) {
+        if (res?.rows?.length <= 6) {
             await db.query(insertUsers, (err, res) => {
               if(err){console.log('pool.query', err) }
           })
