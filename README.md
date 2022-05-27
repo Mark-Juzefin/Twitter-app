@@ -18,6 +18,7 @@ OR
 2. docker-compose up
 ```
 
+Warning: it takes approximately 60 seconds after the script to run to run the client.
 ## To GET Data
 
 ```Hit URL http://localhost:1337/```
