@@ -60,5 +60,5 @@ app.listen(PORT, async () => {
     setTimeout(() => {
         startListenTweetQueue()
         console.log('start ListenTweetQueue');
-    }, 40000);
+    }, 50000);
   });

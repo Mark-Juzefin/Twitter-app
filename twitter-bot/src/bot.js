@@ -2,7 +2,7 @@ const {sentence} = require('./sentenceGenerator')
 const {randGen} = require('./sentenceGenerator')
 const axios = require('axios')
 
-const timeToStart = 40000
+const timeToStart = 60000
 console.log(`bot will starts after ${timeToStart} s.`);
 
 
@@ -17,7 +17,7 @@ setTimeout(async () => {
       responseType: 'json'
   }).then((res) => {
       users = res.data
-  })
+  }).catch(e => console.log(e))
   
   
   
