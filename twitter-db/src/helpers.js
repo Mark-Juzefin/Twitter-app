@@ -25,7 +25,7 @@ const getDB = async () => {
   (
     id SERIAL PRIMARY KEY,
     text varchar(250),
-    user_id integer REFERENCES users(id)
+    user_id integer REFERENCES postgres.users(id)
   )
 `
   
@@ -181,5 +181,6 @@ module.exports = {
     postTweet,
     getUsers,
     getFeed,
-    createUser
+    createUser,
+    getDB
 }

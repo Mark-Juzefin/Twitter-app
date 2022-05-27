@@ -1,5 +1,5 @@
 const express = require('express');
-const { startListenTweetQueue, postTweet, getUsers, getFeed, createUser } = require('./helpers')
+const { startListenTweetQueue, postTweet, getUsers, getFeed, createUser, getDB } = require('./helpers')
 
 const PORT = 8090;
 const app = express();
@@ -58,6 +58,7 @@ app.listen(PORT, async () => {
     console.log('Server do work!');
 
     setTimeout(() => {
+        getDB()
         startListenTweetQueue()
         console.log('start ListenTweetQueue');
     }, 50000);
