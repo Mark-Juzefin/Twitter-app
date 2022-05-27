@@ -4,6 +4,8 @@ twitter-bot: simulates activity. Gets a list of users from the database and gene
 twitter-api: layer before twitter-db, uses RabbitMQ to request POST tweet
 twitter-db: implements the work with the database
 
+Warning: After running the script, you must enter the command ```docker exec -it node_1 ./cockroach init --insecure``` in another terminal.
+
 ## To Run
 ```
 bash script.sh
