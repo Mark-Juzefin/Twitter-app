@@ -47,8 +47,12 @@ setTimeout(async () => {
       responseType: 'json'
     }).then((res) => {
       console.log("Got users")
-      isConnected = false
-      users = res.data
+      if (res.data.length) {
+        isConnected = false
+        users = res.data
+      }
+      
+      
       console.log(users);
   }).catch(e => console.log('ERROR: ', "Failed to  get users ", e.message))
     await sleep(2000);
