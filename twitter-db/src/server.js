@@ -57,6 +57,21 @@ app.post('/tweet', async (req, res) => {
 app.listen(PORT, async () => {
     console.log('Server do work!');
 
+    function sleep(ms) {
+        return new Promise((resolve) => {
+          setTimeout(resolve, ms);
+        });
+        }
+    
+      let isConnected = true
+      while (isConnected) {
+          const res = await startListenTweetQueue()
+    
+          isConnected = !res
+          await sleep(2000);
+    
+      }
+
     setTimeout(() => {
         getDB()
         startListenTweetQueue()

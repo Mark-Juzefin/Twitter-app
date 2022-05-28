@@ -1,4 +1,5 @@
 const amqp = require('amqplib/callback_api');
+const amqplib = require('amqplib');
 const { connectToDB } = require('./db')
 const { Pool } = require('pg');
 
@@ -8,7 +9,7 @@ const getDB = async () => {
 
     const db = await new Pool({
         connectionString: 'postgresql://root@node_1:26257/postgres?sslmode=disable',
-        connectionTimeoutMillis: 60000
+        connectionTimeoutMillis: 10000
     })
     const createDataBaseSQL = `CREATE DATABASE IF NOT EXISTS postgres`
 
@@ -123,57 +124,61 @@ const getFeed = async () => {
 
 
   
-// const startListenTweetQueue = async () => {
-//     try {
-//     const queue = 'tweet';
-//     const conn = await amqplib.connect('amqp://rabbitmq');
+const startListenTweetQueue = async () => {
+    try {
+    const queue = 'tweet';
+    const conn = await amqplib.connect('amqp://rabbitmq');
   
-//     const ch1 = await conn.createChannel();
-//     await ch1.assertQueue(queue);
+    const ch1 = await conn.createChannel();
+    await ch1.assertQueue(queue);
   
-//     // Listener
-//     ch1.consume(queue, async (msg) => {
-//       if (msg !== null) {
-//         const message = msg.content.toString();
-//         console.log(" [x] Received %s", message);
-//         const { screen_name, text } = JSON.parse(message);
-//         await postTweet(screen_name, text);
-//       } else {
-//         console.log('Consumer cancelled by server');
-//       }
-//     });
-//     } catch (error) {
-//         console.log('error', error);
-//     }
+    console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
+    // Listener
+    ch1.consume(queue, async (msg) => {
+      if (msg !== null) {
+        const message = msg.content.toString();
+        console.log(" [x] Received %s", message);
+        const { screen_name, text } = JSON.parse(message);
+        await postTweet(screen_name, text);
+      } else {
+        console.log('Consumer cancelled by server');
+      }
+    });
+      
+      return true
+    } catch (error) {
+      console.log('failed connecting to rabbitmq');
+      return false
+    }
     
-// }
-
-
-const startListenTweetQueue = () => {
-    amqp.connect('amqp://rabbitmq', (error0, connection) => {
-        if (error0) {
-            throw error0;
-        }
-        connection.createChannel((error1, channel) => {
-            if (error1) {
-                throw error1;
-            }
-            var queue = 'tweet';
-            channel.assertQueue(queue, {
-            durable: false
-            });         
-            console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);    
-            channel.consume(queue,  async (msg) => {
-                const message = msg.content.toString();
-                console.log(" [x] Received %s", message);
-                const { screen_name, text } = JSON.parse(message);
-                await postTweet(screen_name, text);
-        }, {
-            noAck: true
-        });
-    });
-    });
 }
+
+
+// const startListenTweetQueue = () => {
+//     amqp.connect('amqp://rabbitmq', (error0, connection) => {
+//         if (error0) {
+//             throw error0;
+//         }
+//         connection.createChannel((error1, channel) => {
+//             if (error1) {
+//                 throw error1;
+//             }
+//             var queue = 'tweet';
+//             channel.assertQueue(queue, {
+//             durable: false
+//             });         
+//             console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);    
+//             channel.consume(queue,  async (msg) => {
+//                 const message = msg.content.toString();
+//                 console.log(" [x] Received %s", message);
+//                 const { screen_name, text } = JSON.parse(message);
+//                 await postTweet(screen_name, text);
+//         }, {
+//             noAck: true
+//         });
+//     });
+//     });
+// }
 
 
 module.exports = {

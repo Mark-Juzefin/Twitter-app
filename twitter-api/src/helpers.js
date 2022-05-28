@@ -1,34 +1,44 @@
 const axios = require('axios')
 const amqp = require('amqplib/callback_api');
+const amqplib = require('amqplib');
 
 
 
 const sendDataThroughRabbitMQ = async (screen_name, text) => {
-    amqp.connect('amqp://rabbitmq', (error0, connection) => {
-    if (error0) {
-        throw error0;
-      }
-    connection.createChannel((error1, channel) => {
-        if (error1) {
-            throw error1;
-        }
-        
-        var queue = 'tweet';
-        var msg = {
-            screen_name,
-            text
-        };
+    try {
+        let res
+        amqp.connect('amqp://rabbitmq', (error0, connection) => {
+            if (error0) {
+                res = false;
+                return
+            }
+            connection.createChannel((error1, channel) => {
+                if (error1) {
+                    res = false;
+                    return
+                }
+                
+                var queue = 'tweet';
+                var msg = {
+                    screen_name,
+                    text
+                };
 
-        channel.assertQueue(queue, {
-            durable: false
+                channel.assertQueue(queue);
+                
+                channel.sendToQueue(queue, Buffer.from(JSON.stringify(msg)));
+                
+                console.log(" [x] Sent %s", msg);
+                res = true
+
+            });
         });
-        
-        channel.sendToQueue(queue, Buffer.from(JSON.stringify(msg)));
-        
-        console.log(" [x] Sent %s", msg);
 
-    });
-});
+        return res
+    } catch (error) {
+        throw error
+    }
+    
 
 }
 

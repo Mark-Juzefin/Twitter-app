@@ -34,7 +34,8 @@ app.get('/feed', async (req, res) => {
 app.post('/tweet', async (req, res) => {
   try {
       
-      sendDataThroughRabbitMQ(req.body.screen_name, req.body.text)
+      const res = await sendDataThroughRabbitMQ(req.body.screen_name, req.body.text)
+      console.log(res);
 
       //const data = await postTweet(req.body.screen_name, req.body.text)
 
